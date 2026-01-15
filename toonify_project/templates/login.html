@@ -1,0 +1,318 @@
+{% extends "base.html" %}
+
+{% block title %}Toonify - Login{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+<style>
+    /* Hide all navigation elements on login page */
+    .profile-nav,
+    .sidebar-menu,
+    nav,
+    .nav-container,
+    .navbar,
+    .menu,
+    .header-menu,
+    .top-nav {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* Override any base template styles */
+    body {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+    .login-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border: 4px solid #d7d1d9;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        animation: bounceIn 0.8s ease-out;
+        backdrop-filter: blur(10px);
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0.3);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .title {
+        font-size: 3rem;
+        color: #7716cb;
+        margin-bottom: 30px;
+        text-shadow: 3px 3px 0px #FFE066;
+        font-weight: bold;
+        animation: wiggle 2s ease-in-out infinite;
+    }
+
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(1deg); }
+        75% { transform: rotate(-1deg); }
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #000000;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 3px solid #8B5CF6;
+        border-radius: 15px;
+        font-size: 1rem;
+        font-family: 'Comic Sans MS', cursive;
+        background: rgba(30, 30, 30, 0.9);
+        color: #F3F4F6;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus {
+        outline: none;
+        border-color: #2D1B69;
+        box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+        transform: scale(1.02);
+    }
+
+    .login-btn {
+        width: 100%;
+        padding: 15px;
+        background: linear-gradient(45deg, #8B5CF6, #A855F7);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        font-family: 'Comic Sans MS', cursive;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        margin-top: 20px;
+    }
+
+    .login-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(139, 92, 246, 0.5);
+        background: linear-gradient(45deg, #A855F7, #8B5CF6);
+    }
+
+    .login-btn:active {
+        transform: translateY(0) scale(0.98);
+    }
+
+    .signup-link {
+        margin-top: 25px;
+        color: #C4B5FD;
+        font-size: 1rem;
+    }
+
+    .signup-link a {
+        color: #3d007f;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .signup-link a:hover {
+        color: #8B5CF6;
+        text-shadow: 1px 1px 2px rgba(139, 92, 246, 0.5);
+    }
+
+    .message {
+        margin-bottom: 20px;
+        padding: 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        animation: slideDown 0.5s ease-out;
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .success {
+        background: rgba(139, 92, 246, 0.2);
+        border: 2px solid #8B5CF6;
+        color: #553C9A;
+    }
+
+    .error {
+        background: rgba(139, 92, 246, 0.2);
+        border: 2px solid #8B5CF6;
+        color: #cc0000;
+    }
+
+    .password-strength-container {
+        margin-top: 10px;
+        display: none;
+    }
+
+    .password-strength-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(200, 200, 200, 0.3);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .password-strength-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        background: linear-gradient(90deg, #EF4444, #F97316, #22C55E);
+        background-size: 300% 100%;
+        background-position: 0% 0;
+    }
+
+    .password-strength-text {
+        font-size: 0.9rem;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .strength-weak .password-strength-fill {
+        width: 33%;
+        background-position: 0% 0;
+    }
+
+    .strength-weak .password-strength-text {
+        color: #EF4444;
+    }
+
+    .strength-medium .password-strength-fill {
+        width: 66%;
+        background-position: 50% 0;
+    }
+
+    .strength-medium .password-strength-text {
+        color: #F97316;
+    }
+
+    .strength-strong .password-strength-fill {
+        width: 100%;
+        background-position: 100% 0;
+    }
+
+    .strength-strong .password-strength-text {
+        color: #22C55E;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="/" class="back-button" style="position: absolute; top: 20px; left: 20px; color: white; text-decoration: none; font-weight: 500; z-index: 1000;">
+    ← Back to Home
+</a>
+<a href="/signup" class="back-button">
+    ← Sign Up Instead
+</a>
+
+<div class="login-container">
+    <h1 class="title">🎨 Welcome Back!</h1>
+    
+    {% if message %}
+    <div class="message {{ message_type }}">{{ message }}</div>
+    {% endif %}
+    
+    <form method="POST" action="/login">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required oninput="checkPasswordStrength()">
+            <div id="password-strength-container" class="password-strength-container">
+                <div class="password-strength-bar">
+                    <div id="password-strength-fill" class="password-strength-fill"></div>
+                </div>
+                <div id="password-strength-text" class="password-strength-text"></div>
+            </div>
+        </div>
+        <button type="submit" class="login-btn">Login</button>
+    </form>
+    
+    <div class="signup-link">
+        Don't have an account? <a href="/signup">Sign Up</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function checkPasswordStrength() {
+        const password = document.getElementById('password').value;
+        const container = document.getElementById('password-strength-container');
+        const fill = document.getElementById('password-strength-fill');
+        const text = document.getElementById('password-strength-text');
+        
+        if (password.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        let score = 0;
+        
+        // Length check
+        if (password.length >= 8) score++;
+        
+        // Uppercase letter
+        if (/[A-Z]/.test(password)) score++;
+        
+        // Lowercase letter
+        if (/[a-z]/.test(password)) score++;
+        
+        // Number
+        if (/[0-9]/.test(password)) score++;
+        
+        // Special character
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        
+        container.style.display = 'block';
+        
+        // Remove all strength classes
+        container.className = 'password-strength-container';
+        
+        if (score >= 4) {
+            container.classList.add('strength-strong');
+            text.textContent = 'Strong Password';
+        } else if (score >= 3) {
+            container.classList.add('strength-medium');
+            text.textContent = 'Medium Password';
+        } else {
+            container.classList.add('strength-weak');
+            text.textContent = 'Weak Password';
+        }
+    }
+</script>
+{% endblock %}

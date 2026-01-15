@@ -1,0 +1,215 @@
+{% extends "base.html" %}
+
+{% block title %}Toonify - Dashboard{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border: 4px solid #FFE066;
+        max-width: 900px;
+        width: 90%;
+        margin: 20px auto;
+        animation: bounceIn 0.8s ease-out;
+        backdrop-filter: blur(10px);
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0.3);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .welcome-section {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .welcome-title {
+        font-size: 2.5rem;
+        color: #FF6B6B;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 0px #FFE066;
+        font-weight: bold;
+    }
+
+    .welcome-subtitle {
+        font-size: 1.2rem;
+        color: #666;
+        margin-bottom: 30px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #4ECDC4, #95E1D3);
+        border-radius: 20px;
+        padding: 25px;
+        text-align: center;
+        color: white;
+        box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3);
+        transition: transform 0.3s ease;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-5px) scale(1.02);
+    }
+
+    .stat-number {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-label {
+        font-size: 1rem;
+        opacity: 0.9;
+    }
+
+    .action-buttons {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 30px;
+    }
+
+    .action-btn {
+        background: linear-gradient(45deg, #FF6B6B, #FFE066);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 20px 30px;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-decoration: none;
+        text-align: center;
+        transition: all 0.3s ease;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 10px 25px rgba(255, 107, 107, 0.4);
+        background: linear-gradient(45deg, #FFE066, #FF6B6B);
+    }
+
+    .action-btn.secondary {
+        background: linear-gradient(45deg, #4ECDC4, #95E1D3);
+    }
+
+    .action-btn.secondary:hover {
+        background: linear-gradient(45deg, #95E1D3, #4ECDC4);
+        box-shadow: 0 10px 25px rgba(78, 205, 196, 0.4);
+    }
+
+    .recent-activity {
+        background: rgba(149, 225, 211, 0.1);
+        border-radius: 20px;
+        padding: 30px;
+        margin-top: 30px;
+        border: 2px solid #95E1D3;
+    }
+
+    .activity-title {
+        font-size: 1.5rem;
+        color: #4ECDC4;
+        margin-bottom: 20px;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .no-activity {
+        text-align: center;
+        color: #666;
+        font-style: italic;
+        padding: 20px;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-container {
+            padding: 20px;
+            margin: 10px;
+        }
+        
+        .welcome-title {
+            font-size: 2rem;
+        }
+        
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .action-buttons {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="welcome-section">
+        <h1 class="welcome-title">🎨 Welcome to Toonify!</h1>
+        <p class="welcome-subtitle">Transform your photos into amazing cartoon masterpieces</p>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">0</div>
+            <div class="stat-label">Total Creations</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #FF6B6B, #FFE066);">
+            <div class="stat-number">6</div>
+            <div class="stat-label">Available Styles</div>
+        </div>
+        <div class="stat-card" style="background: linear-gradient(135deg, #9B59B6, #E74C3C);">
+            <div class="stat-number">₹89+</div>
+            <div class="stat-label">Starting Price</div>
+        </div>
+    </div>
+
+    <div class="action-buttons">
+        <a href="/toonify" class="action-btn">
+            <span>🎨</span>
+            Create New Transformation
+        </a>
+        <a href="/history" class="action-btn secondary">
+            <span>📸</span>
+            View My Creations
+        </a>
+    </div>
+
+    <div class="recent-activity">
+        <h3 class="activity-title">🚀 Quick Start</h3>
+        <div class="no-activity">
+            <p><strong>Ready to get started?</strong></p>
+            <p>Click "Create New Transformation" to upload your first image and transform it into a cartoon masterpiece!</p>
+            <p>Choose from 6 amazing styles including Oil Painting, Pencil Sketch, Classic Cartoon, and more!</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

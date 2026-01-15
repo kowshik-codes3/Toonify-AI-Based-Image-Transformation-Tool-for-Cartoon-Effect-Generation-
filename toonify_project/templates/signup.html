@@ -1,0 +1,502 @@
+{% extends "base.html" %}
+
+{% block title %}Toonify - Sign Up{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('static', filename='signup.css') }}">
+<style>
+    /* Hide all navigation elements on signup page */
+    .profile-nav,
+    .sidebar-menu,
+    nav,
+    .nav-container,
+    .navbar,
+    .menu,
+    .header-menu,
+    .top-nav {
+        display: none !important;
+        visibility: hidden !important;
+    }
+    
+    /* Override any base template styles */
+    body {
+        padding-top: 0 !important;
+        margin-top: 0 !important;
+    }
+    .signup-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border: 4px solid #4ECDC4;
+        max-width: 400px;
+        width: 90%;
+        text-align: center;
+        animation: bounceIn 0.8s ease-out;
+        backdrop-filter: blur(10px);
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0.3);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .title {
+        font-size: 3rem;
+        color: #4ECDC4;
+        margin-bottom: 30px;
+        text-shadow: 3px 3px 0px #95E1D3;
+        font-weight: bold;
+        animation: wiggle 2s ease-in-out infinite;
+    }
+
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(1deg); }
+        75% { transform: rotate(-1deg); }
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+        text-align: left;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        color: #E9D5FF;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .form-group input {
+        width: 100%;
+        padding: 12px 15px;
+        border: 3px solid #8B5CF6;
+        border-radius: 15px;
+        font-size: 1rem;
+        font-family: 'Comic Sans MS', cursive;
+        background: rgba(30, 30, 30, 0.9);
+        color: #F3F4F6;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #2D1B69;
+        box-shadow: 0 0 15px rgba(139, 92, 246, 0.5);
+        transform: scale(1.02);
+    }
+
+    .form-group select {
+        width: 100%;
+        padding: 12px 15px;
+        border: 3px solid #8B5CF6;
+        border-radius: 15px;
+        font-size: 1rem;
+        font-family: 'Comic Sans MS', cursive;
+        background: rgba(30, 30, 30, 0.9);
+        color: #F3F4F6;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+        cursor: pointer;
+    }
+
+    .form-group input[type="date"] {
+        cursor: pointer;
+    }
+
+    .form-group input[readonly] {
+        background: rgba(50, 50, 50, 0.5);
+        cursor: not-allowed;
+    }
+
+    .form-hint {
+        display: block;
+        font-size: 0.9rem;
+        color: #C4B5FD;
+        margin-top: 8px;
+        font-family: 'Comic Sans MS', cursive;
+        font-style: italic;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-5px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .security-section {
+        background: rgba(255, 235, 59, 0.1);
+        border: 2px dashed #FFE066;
+        border-radius: 15px;
+        padding: 20px;
+        margin: 20px 0;
+        position: relative;
+    }
+
+    .security-section::before {
+        content: '🔒';
+        position: absolute;
+        top: -10px;
+        left: 15px;
+        background: white;
+        padding: 0 10px;
+        font-size: 1.2rem;
+    }
+
+    .security-section .form-group {
+        margin-bottom: 15px;
+    }
+
+    .security-section .form-group:last-child {
+        margin-bottom: 0;
+    }
+
+    .signup-btn {
+        width: 100%;
+        padding: 18px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 16px;
+        font-weight: 600;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        margin-top: 8px;
+        letter-spacing: 0.01em;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 
+            0 8px 24px rgba(102, 126, 234, 0.2),
+            0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    
+    .signup-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transition: left 0.6s;
+    }
+    
+    .signup-btn:hover::before {
+        left: 100%;
+    }
+
+    .signup-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 
+            0 16px 32px rgba(102, 126, 234, 0.4),
+            0 0 20px rgba(102, 126, 234, 0.5),
+            0 0 40px rgba(102, 126, 234, 0.2);
+        background: linear-gradient(135deg, #5a67d8 0%, #6b46c1 100%);
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0%, 100% {
+            box-shadow: 
+                0 16px 32px rgba(102, 126, 234, 0.4),
+                0 0 20px rgba(102, 126, 234, 0.5),
+                0 0 40px rgba(102, 126, 234, 0.2);
+        }
+        50% {
+            box-shadow: 
+                0 16px 32px rgba(102, 126, 234, 0.6),
+                0 0 30px rgba(102, 126, 234, 0.7),
+                0 0 60px rgba(102, 126, 234, 0.3);
+        }
+    }
+
+    .signup-btn:active {
+        transform: translateY(-1px);
+        box-shadow: 
+            0 8px 16px rgba(102, 126, 234, 0.4),
+            0 0 15px rgba(102, 126, 234, 0.3);
+    }
+
+    .login-link {
+        margin-top: 25px;
+        color: #C4B5FD;
+        font-size: 1rem;
+    }
+
+    .login-link a {
+        color: #FF6B6B;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+    }
+
+    .login-link a:hover {
+        color: #4ECDC4;
+        text-shadow: 1px 1px 2px rgba(78, 205, 196, 0.3);
+    }
+
+    .message {
+        margin-bottom: 20px;
+        padding: 12px;
+        border-radius: 15px;
+        font-weight: bold;
+        animation: slideDown 0.5s ease-out;
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .success {
+        background: rgba(76, 205, 196, 0.2);
+        border: 2px solid #4ECDC4;
+        color: #2d8577;
+    }
+
+    .error {
+        background: rgba(255, 107, 107, 0.2);
+        border: 2px solid #FF6B6B;
+        color: #cc4444;
+    }
+
+    .password-strength-container {
+        margin-top: 10px;
+        display: none;
+    }
+
+    .password-strength-bar {
+        width: 100%;
+        height: 8px;
+        background: rgba(200, 200, 200, 0.3);
+        border-radius: 4px;
+        overflow: hidden;
+        margin-bottom: 5px;
+    }
+
+    .password-strength-fill {
+        height: 100%;
+        width: 0%;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+        background: linear-gradient(90deg, #EF4444, #F97316, #22C55E);
+        background-size: 300% 100%;
+        background-position: 0% 0;
+    }
+
+    .password-strength-text {
+        font-size: 0.9rem;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .strength-weak .password-strength-fill {
+        width: 33%;
+        background-position: 0% 0;
+    }
+
+    .strength-weak .password-strength-text {
+        color: #EF4444;
+    }
+
+    .strength-medium .password-strength-fill {
+        width: 66%;
+        background-position: 50% 0;
+    }
+
+    .strength-medium .password-strength-text {
+        color: #F97316;
+    }
+
+    .strength-strong .password-strength-fill {
+        width: 100%;
+        background-position: 100% 0;
+    }
+
+    .strength-strong .password-strength-text {
+        color: #22C55E;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="/" class="back-button" style="position: absolute; top: 20px; left: 20px; color: white; text-decoration: none; font-weight: 500; z-index: 1000;">
+    ← Back to Home
+</a>
+<a href="/login" class="back-button">
+    ← Back to Login
+</a>
+
+<div class="signup-container">
+    <h1 class="title">🎨 Sign Up</h1>
+    
+    {% if message %}
+    <div class="message {{ message_type }}">{{ message }}</div>
+    {% endif %}
+    
+    <form method="POST" action="/signup">
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" placeholder="Enter your username" required>
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" placeholder="Enter your email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" placeholder="Create a password" required oninput="checkPasswordStrength()">
+            <div id="password-strength-container" class="password-strength-container">
+                <div class="password-strength-bar">
+                    <div id="password-strength-fill" class="password-strength-fill"></div>
+                </div>
+                <div id="password-strength-text" class="password-strength-text"></div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="dob">Date of Birth</label>
+            <input type="date" id="dob" name="dob" required>
+        </div>
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" placeholder="Enter your age" min="13" max="120" required readonly>
+        </div>
+        <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+                <option value="">Select your gender</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+                <option value="prefer-not-to-say">Prefer not to say</option>
+            </select>
+        </div>
+        <div class="security-section">
+            <div class="form-group">
+                <label for="security_question">Security Question</label>
+                <select id="security_question" name="security_question" required>
+                    <option value="">Choose a security question</option>
+                    <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                    <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                    <option value="What city were you born in?">What city were you born in?</option>
+                    <option value="What was the name of your first school?">What was the name of your first school?</option>
+                    <option value="What is your favorite movie?">What is your favorite movie?</option>
+                    <option value="What was your childhood nickname?">What was your childhood nickname?</option>
+                    <option value="What is the name of the street you grew up on?">What is the name of the street you grew up on?</option>
+                    <option value="What was your first car model?">What was your first car model?</option>
+                    <option value="What is your favorite book?">What is your favorite book?</option>
+                    <option value="What was the name of your best friend in childhood?">What was the name of your best friend in childhood?</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="security_answer">Security Answer</label>
+                <input type="text" id="security_answer" name="security_answer" placeholder="Enter your answer" required maxlength="100">
+                <small class="form-hint">🔒 This will help you recover your account if you forget your password</small>
+            </div>
+        </div>
+        <button type="submit" class="signup-btn">Sign Up</button>
+    </form>
+    
+    <div class="login-link">
+        Already have an account? <a href="/login">Login</a>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function checkPasswordStrength() {
+        const password = document.getElementById('password').value;
+        const container = document.getElementById('password-strength-container');
+        const fill = document.getElementById('password-strength-fill');
+        const text = document.getElementById('password-strength-text');
+        
+        if (password.length === 0) {
+            container.style.display = 'none';
+            return;
+        }
+        
+        let score = 0;
+        
+        // Length check
+        if (password.length >= 8) score++;
+        
+        // Uppercase letter
+        if (/[A-Z]/.test(password)) score++;
+        
+        // Lowercase letter
+        if (/[a-z]/.test(password)) score++;
+        
+        // Number
+        if (/[0-9]/.test(password)) score++;
+        
+        // Special character
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        
+        container.style.display = 'block';
+        
+        // Remove all strength classes
+        container.className = 'password-strength-container';
+        
+        if (score >= 4) {
+            container.classList.add('strength-strong');
+            text.textContent = 'Strong Password';
+        } else if (score >= 3) {
+            container.classList.add('strength-medium');
+            text.textContent = 'Medium Password';
+        } else {
+            container.classList.add('strength-weak');
+            text.textContent = 'Weak Password';
+        }
+    }
+    
+    function calculateAge() {
+        const dobInput = document.getElementById('dob');
+        const ageInput = document.getElementById('age');
+        
+        if (dobInput.value) {
+            const dob = new Date(dobInput.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            
+            ageInput.value = age >= 0 ? age : '';
+        } else {
+            ageInput.value = '';
+        }
+    }
+    
+    // Initialize age calculation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const dobInput = document.getElementById('dob');
+        dobInput.addEventListener('change', calculateAge);
+        
+        // Set max date to today (prevent future dates)
+        const today = new Date();
+        const maxDate = today.toISOString().split('T')[0];
+        dobInput.max = maxDate;
+    });
+</script>
+{% endblock %}

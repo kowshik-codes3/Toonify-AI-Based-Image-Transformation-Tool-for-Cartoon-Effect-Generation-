@@ -1,0 +1,34 @@
+# Toonify Project Dependencies
+# Image Transformation Application with Cartoon Effects
+
+# ==========================================
+# CORE WEB FRAMEWORK
+# ==========================================
+flask>=2.3.0
+flask-cors>=4.0.0
+
+# ==========================================
+# DATABASE & AUTHENTICATION  
+# ==========================================
+psycopg2-binary>=2.9.0
+bcrypt>=4.0.0
+
+# ==========================================
+# IMAGE PROCESSING (REQUIRED)
+# ==========================================
+Pillow>=10.0.0             # Image manipulation for all 6 cartoon styles
+opencv-python>=4.8.0       # Computer vision library (5 styles use OpenCV)
+numpy>=1.24.0              # Required by OpenCV and image processing
+
+# No AI dependencies needed - all styles use OpenCV and PIL
+
+# ==========================================
+# PAYMENT PROCESSING
+# ==========================================
+razorpay>=1.4.0
+
+# ==========================================
+# INSTALLATION NOTES
+# ==========================================
+# Basic install (no AI): pip install -r requirements.txt
+# With AI for classic_cartoon: Uncomment the AI libraries section above

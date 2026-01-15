@@ -1,0 +1,38 @@
+# Virtual Environment
+venv/
+env/
+.env
+
+# Python Cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite3
+
+# Uploads (if sensitive)
+# uploads/
+
+# Razorpay Keys (keep secure)
+razorpay_config.py
+
+# Temporary files
+*.tmp
+*.temp

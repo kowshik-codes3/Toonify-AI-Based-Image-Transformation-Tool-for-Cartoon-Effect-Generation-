@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Toonify{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='app.css') }}">
+    {% block extra_css %}{% endblock %}
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Comic Sans MS', cursive, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            background: linear-gradient(45deg, #000000, #2D1B69, #8B5CF6, #1F1F1F);
+            background-size: 400% 400%;
+            animation: cartoonBg 15s ease infinite;
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        @keyframes cartoonBg {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Floating clouds animation */
+        .floating-clouds {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .cloud {
+            position: absolute;
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 50px;
+            opacity: 0.6;
+            animation: float 20s infinite linear;
+        }
+
+        .cloud::before,
+        .cloud::after {
+            content: '';
+            position: absolute;
+            background: rgba(139, 92, 246, 0.3);
+            border-radius: 50px;
+        }
+
+        .cloud1 {
+            width: 60px;
+            height: 30px;
+            top: 20%;
+            left: -80px;
+            animation-duration: 25s;
+        }
+
+        .cloud1::before {
+            width: 50px;
+            height: 50px;
+            top: -25px;
+            left: 10px;
+        }
+
+        .cloud1::after {
+            width: 60px;
+            height: 40px;
+            top: -15px;
+            right: 10px;
+        }
+
+        .cloud2 {
+            width: 80px;
+            height: 40px;
+            top: 40%;
+            left: -100px;
+            animation-duration: 30s;
+            animation-delay: -10s;
+        }
+
+        .cloud2::before {
+            width: 70px;
+            height: 60px;
+            top: -30px;
+            left: 15px;
+        }
+
+        .cloud2::after {
+            width: 80px;
+            height: 50px;
+            top: -20px;
+            right: 15px;
+        }
+
+        .cloud3 {
+            width: 70px;
+            height: 35px;
+            top: 60%;
+            left: -90px;
+            animation-duration: 35s;
+            animation-delay: -20s;
+        }
+
+        .cloud3::before {
+            width: 60px;
+            height: 55px;
+            top: -25px;
+            left: 12px;
+        }
+
+        .cloud3::after {
+            width: 70px;
+            height: 45px;
+            top: -18px;
+            right: 12px;
+        }
+
+        @keyframes float {
+            from { transform: translateX(-100px); }
+            to { transform: translateX(calc(100vw + 100px)); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            min-height: 100vh;
+            padding-top: 40px;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: linear-gradient(45deg, #8B5CF6, #2D1B69);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 12px 20px;
+            cursor: pointer;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: 'Comic Sans MS', cursive;
+            transition: all 0.3s ease;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9rem;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+        }
+
+        .back-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+            background: linear-gradient(45deg, #2D1B69, #8B5CF6);
+        }
+
+        .back-button:active {
+            transform: translateY(0) scale(1.02);
+        }
+        /* Profile Navigation Styles */
+        .profile-nav {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .profile-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border: 3px solid white;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            animation: profilePulse 2s ease-in-out infinite;
+        }
+
+        .profile-icon:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
+            background: linear-gradient(45deg, #2D1B69, #8B5CF6);
+        }
+
+        @keyframes profilePulse {
+            0%, 100% { 
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 0 0 rgba(139, 92, 246, 0.7);
+            }
+            50% { 
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2), 0 0 0 10px rgba(139, 92, 246, 0);
+            }
+        }
+
+        /* Hide profile nav on login/signup pages */
+        .hide-profile-nav .profile-nav {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .profile-nav {
+                top: 15px;
+                right: 15px;
+            }
+            
+            .profile-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Left Sidebar Menu Styles */
+        .sidebar {
+            position: fixed;
+            left: -300px;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+            background: linear-gradient(180deg, #2D1B69, #8B5CF6, #FF6B6B);
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.2);
+            transition: left 0.3s ease;
+            z-index: 2000;
+            overflow-y: auto;
+        }
+
+        .sidebar.open {
+            left: 0;
+        }
+
+        .sidebar-header {
+            padding: 20px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .sidebar-logo {
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+        }
+
+        .sidebar-menu {
+            padding: 20px 0;
+        }
+
+        .sidebar-item {
+            display: block;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-left-color: #FFE066;
+            transform: translateX(5px);
+        }
+
+        .sidebar-item.active {
+            background: rgba(255, 255, 255, 0.15);
+            border-left-color: #FFE066;
+        }
+
+        .sidebar-item i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1500;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        /* Menu Toggle Button */
+        .menu-toggle {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #FF6B6B, #FFE066);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            z-index: 2100;
+            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        .menu-toggle.active {
+            background: linear-gradient(45deg, #E74C3C, #F39C12);
+        }
+
+        /* Adjust main content when sidebar is open */
+        .main-wrapper {
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-wrapper.sidebar-open {
+            margin-left: 300px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 250px;
+                left: -250px;
+            }
+            
+            .main-wrapper.sidebar-open {
+                margin-left: 0;
+            }
+            
+            .profile-nav {
+                top: 15px;
+                right: 15px;
+            }
+            
+            .profile-icon {
+                width: 45px;
+                height: 45px;
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Menu Toggle Button -->
+    {% if session.user_email %}
+    <button class="menu-toggle" id="menuToggle" onclick="toggleSidebar()">
+        ☰
+    </button>
+    
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    
+    <!-- Left Sidebar Menu -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-logo">🎨 Toonify</div>
+            <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.9rem;">{{ user_profile.username if user_profile else session.user_email }}</p>
+        </div>
+        
+        <nav class="sidebar-menu">
+            <a href="/dashboard" class="sidebar-item {{ 'active' if request.endpoint == 'dashboard' else '' }}">
+                <i>🏠</i> Dashboard
+            </a>
+            <a href="/toonify" class="sidebar-item {{ 'active' if request.endpoint == 'toonify' else '' }}">
+                <i>🎨</i> Transform Images
+            </a>
+            <a href="/history" class="sidebar-item {{ 'active' if request.endpoint == 'history' else '' }}">
+                <i>📸</i> My Creations
+            </a>
+            <a href="/settings" class="sidebar-item {{ 'active' if request.endpoint == 'settings' else '' }}">
+                <i>⚙️</i> Settings
+            </a>
+            <a href="/profile" class="sidebar-item {{ 'active' if request.endpoint == 'profile' else '' }}">
+                <i>👤</i> Profile
+            </a>
+            <a href="/logout" class="sidebar-item" style="margin-top: 30px; border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px;">
+                <i>🚪</i> Logout
+            </a>
+        </nav>
+    </div>
+    {% endif %}
+
+    <!-- Main Content Wrapper -->
+    <div class="main-wrapper" id="mainWrapper">
+        <!-- Profile Navigation (only show when user is logged in) -->
+        {% if session.user_email %}
+        <div class="profile-nav">
+            <a href="{{ url_for('profile') }}" class="profile-icon" title="My Profile">
+                👤
+            </a>
+        </div>
+        {% endif %}
+
+    <div class="floating-clouds">
+        <div class="cloud cloud1"></div>
+        <div class="cloud cloud2"></div>
+        <div class="cloud cloud3"></div>
+    </div>
+
+        <div class="container">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    {% block extra_js %}{% endblock %}
+    
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainWrapper = document.getElementById('mainWrapper');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('active');
+            mainWrapper.classList.toggle('sidebar-open');
+            menuToggle.classList.toggle('active');
+            
+            // Change toggle button icon
+            if (sidebar.classList.contains('open')) {
+                menuToggle.innerHTML = '✕';
+            } else {
+                menuToggle.innerHTML = '☰';
+            }
+        }
+        
+        function closeSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebarOverlay');
+            const mainWrapper = document.getElementById('mainWrapper');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            sidebar.classList.remove('open');
+            overlay.classList.remove('active');
+            mainWrapper.classList.remove('sidebar-open');
+            menuToggle.classList.remove('active');
+            menuToggle.innerHTML = '☰';
+        }
+        
+        // Close sidebar on escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeSidebar();
+            }
+        });
+        
+        // Auto-close sidebar on mobile when clicking a link
+        const sidebarItems = document.querySelectorAll('.sidebar-item');
+        sidebarItems.forEach(item => {
+            item.addEventListener('click', function() {
+                if (window.innerWidth <= 768) {
+                    closeSidebar();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

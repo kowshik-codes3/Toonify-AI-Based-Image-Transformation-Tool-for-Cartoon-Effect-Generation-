@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block title %}Payment Successful{% endblock %}
+
+{% block extra_css %}
+<style>
+    .success-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 60px 40px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border: 4px solid #4ECDC4;
+        max-width: 600px;
+        width: 90%;
+        margin: 50px auto;
+        text-align: center;
+        animation: bounceIn 0.8s ease-out;
+        backdrop-filter: blur(10px);
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0.3);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .success-icon {
+        font-size: 5rem;
+        margin-bottom: 20px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .success-title {
+        font-size: 2rem;
+        color: #4ECDC4;
+        margin-bottom: 15px;
+        font-weight: bold;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .success-message {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 30px;
+        line-height: 1.6;
+    }
+
+    .filename {
+        color: #FF6B6B;
+        font-weight: bold;
+    }
+
+    .action-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .download-btn, .dashboard-btn {
+        background: linear-gradient(45deg, #4ECDC4, #95E1D3);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+        display: inline-block;
+    }
+
+    .download-btn:hover, .dashboard-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(78, 205, 196, 0.4);
+        background: linear-gradient(45deg, #95E1D3, #4ECDC4);
+    }
+
+    .dashboard-btn {
+        background: linear-gradient(45deg, #FFE066, #FFD43B);
+    }
+
+    .dashboard-btn:hover {
+        background: linear-gradient(45deg, #FFD43B, #FFE066);
+        box-shadow: 0 8px 25px rgba(255, 224, 102, 0.4);
+    }
+
+    .auto-download-notice {
+        font-size: 0.9rem;
+        color: #888;
+        margin-top: 20px;
+        font-style: italic;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="success-container">
+    <div class="success-icon">✅</div>
+    <h1 class="success-title">Payment Successful!</h1>
+    <p class="success-message">
+        Your payment for <span class="filename">{{ filename }}</span> was successful.<br>
+        Your download will begin automatically in a moment.
+    </p>
+    
+    <div class="action-buttons">
+        {% if image_id %}
+        <a href="{{ url_for('download_image', image_id=image_id) }}" class="download-btn" id="downloadLink">
+            📥 Download Now
+        </a>
+        {% endif %}
+        <a href="{{ url_for('dashboard') }}" class="dashboard-btn">
+            🏠 Return to Dashboard
+        </a>
+    </div>
+    
+    <p class="auto-download-notice">
+        If your download doesn't start automatically, click the download button above.
+    </p>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        {% if image_id %}
+        // Auto-trigger download after 2 seconds
+        setTimeout(function() {
+            console.log('Starting automatic download...');
+            const downloadLink = document.getElementById('downloadLink');
+            if (downloadLink) {
+                // Create a temporary invisible link to trigger download
+                const hiddenLink = document.createElement('a');
+                hiddenLink.href = downloadLink.href;
+                hiddenLink.download = '';
+                hiddenLink.style.display = 'none';
+                document.body.appendChild(hiddenLink);
+                hiddenLink.click();
+                document.body.removeChild(hiddenLink);
+                
+                // Update UI to show download started
+                downloadLink.innerHTML = '✅ Download Started';
+                downloadLink.style.background = 'linear-gradient(45deg, #4ECDC4, #44C767)';
+                
+                // Show feedback page after download (5 seconds delay)
+                setTimeout(function() {
+                    console.log('Redirecting to feedback page...');
+                    window.location.href = "{{ url_for('feedback_page', image_id=image_id) }}";
+                }, 5000);
+            }
+        }, 2000);
+        
+        // Manual download button click handler
+        const downloadBtn = document.getElementById('downloadLink');
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                console.log('Manual download clicked');
+                
+                // Create download
+                const link = document.createElement('a');
+                link.href = this.href;
+                link.download = '';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Update button
+                this.innerHTML = '✅ Downloaded!';
+                this.style.background = 'linear-gradient(45deg, #4ECDC4, #44C767)';
+                
+                // Show option to go to feedback
+                setTimeout(function() {
+                    if (confirm('Download complete! Would you like to provide feedback about your experience?')) {
+                        window.location.href = "{{ url_for('feedback_page', image_id=image_id) }}";
+                    }
+                }, 1000);
+            });
+        }
+        {% endif %}
+    });
+</script>
+{% endblock %}

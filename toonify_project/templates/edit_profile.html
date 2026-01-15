@@ -1,0 +1,392 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - Toonify{% endblock %}
+
+{% block extra_css %}
+<style>
+    .edit-profile-container {
+        max-width: 900px;
+        margin: 20px auto;
+        padding: 40px;
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 30px;
+        box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15);
+        border: 4px solid #4ECDC4;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .edit-profile-container::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        left: -50%;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(45deg, transparent, rgba(78, 205, 196, 0.1), transparent);
+        animation: profileShimmer 3s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    @keyframes profileShimmer {
+        0%, 100% { transform: rotate(0deg); }
+        50% { transform: rotate(180deg); }
+    }
+
+    .edit-profile-header {
+        text-align: center;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .edit-profile-title {
+        font-size: 3rem;
+        color: #E9D5FF;
+        font-family: 'Comic Sans MS', cursive;
+        margin: 0;
+        text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+        font-weight: bold;
+    }
+
+    .edit-profile-subtitle {
+        font-size: 1.4rem;
+        color: #C4B5FD;
+        margin-top: 10px;
+        font-family: 'Comic Sans MS', cursive;
+        font-weight: 600;
+    }
+
+    .edit-form {
+        position: relative;
+        z-index: 1;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        gap: 30px;
+        margin-bottom: 40px;
+    }
+
+    .form-group {
+        margin-bottom: 25px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 1.3rem;
+        font-weight: bold;
+        color: #E9D5FF;
+        font-family: 'Comic Sans MS', cursive;
+    }
+
+    .form-group input,
+    .form-group select {
+        width: 100%;
+        padding: 15px 20px;
+        border: 4px solid #8B5CF6;
+        border-radius: 20px;
+        font-size: 1.2rem;
+        font-family: 'Comic Sans MS', cursive;
+        background: rgba(30, 30, 30, 0.9);
+        color: #F3F4F6;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus {
+        outline: none;
+        border-color: #2D1B69;
+        box-shadow: 0 0 20px rgba(139, 92, 246, 0.5);
+        transform: scale(1.02);
+        background: rgba(45, 27, 105, 0.8);
+    }
+
+    .form-group input[type="date"] {
+        cursor: pointer;
+    }
+
+    .form-group input[readonly] {
+        background: rgba(50, 50, 50, 0.5);
+        cursor: not-allowed;
+    }
+
+    .security-section {
+        background: rgba(139, 92, 246, 0.1);
+        border: 3px solid #8B5CF6;
+        border-radius: 20px;
+        padding: 25px;
+        margin: 30px 0;
+        grid-column: 1 / -1;
+    }
+
+    .security-section h3 {
+        font-size: 1.6rem;
+        color: #E9D5FF;
+        font-family: 'Comic Sans MS', cursive;
+        margin: 0 0 20px 0;
+        text-align: center;
+        font-weight: bold;
+    }
+
+    .action-buttons {
+        display: flex;
+        gap: 25px;
+        justify-content: center;
+        margin-top: 40px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .action-btn {
+        padding: 20px 40px;
+        border: none;
+        border-radius: 20px;
+        font-size: 1.4rem;
+        font-family: 'Comic Sans MS', cursive;
+        font-weight: bold;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        position: relative;
+        overflow: hidden;
+        min-width: 180px;
+        text-align: center;
+    }
+
+    .action-btn::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transition: all 0.3s ease;
+        transform: translate(-50%, -50%);
+    }
+
+    .action-btn:hover::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .save-btn {
+        background: linear-gradient(45deg, #8B5CF6, #A855F7);
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .save-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(139, 92, 246, 0.5);
+    }
+
+    .cancel-btn {
+        background: linear-gradient(45deg, #1F1F1F, #374151);
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .cancel-btn:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 30px rgba(31, 31, 31, 0.5);
+    }
+
+    .back-button {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(139, 92, 246, 0.9);
+        color: white;
+        padding: 15px 25px;
+        border-radius: 25px;
+        text-decoration: none;
+        font-family: 'Comic Sans MS', cursive;
+        font-weight: bold;
+        font-size: 1.1rem;
+        transition: all 0.3s ease;
+        border: 3px solid #8B5CF6;
+        z-index: 10;
+    }
+
+    .back-button:hover {
+        background: #2D1B69;
+        color: white;
+        transform: translateX(-5px);
+        box-shadow: 0 8px 20px rgba(78, 205, 196, 0.3);
+    }
+
+    .message {
+        margin-bottom: 25px;
+        padding: 15px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 1.2rem;
+        animation: slideDown 0.5s ease-out;
+        text-align: center;
+    }
+
+    @keyframes slideDown {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+
+    .success {
+        background: rgba(76, 205, 196, 0.2);
+        border: 3px solid #4ECDC4;
+        color: #2d8577;
+    }
+
+    .error {
+        background: rgba(255, 107, 107, 0.2);
+        border: 3px solid #FF6B6B;
+        color: #cc4444;
+    }
+
+    @media (max-width: 768px) {
+        .edit-profile-container {
+            margin: 15px;
+            padding: 25px;
+        }
+        
+        .form-grid {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        
+        .action-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .action-btn {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('profile') }}" class="back-button">
+    ← Back to Profile
+</a>
+
+<div class="edit-profile-container">
+    <div class="edit-profile-header">
+        <h1 class="edit-profile-title">✏️ Edit Profile</h1>
+        <p class="edit-profile-subtitle">Update your information</p>
+    </div>
+    
+    {% if message %}
+    <div class="message {{ message_type }}">{{ message }}</div>
+    {% endif %}
+    
+    <form class="edit-form" method="POST" action="/edit-profile">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" value="{{ user.username }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ user.email }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" value="{{ user.date_of_birth }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" value="{{ user.age }}" min="13" max="120" required readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="gender">Gender</label>
+                <select id="gender" name="gender" required>
+                    <option value="">Select your gender</option>
+                    <option value="male" {% if user.gender == 'male' %}selected{% endif %}>Male</option>
+                    <option value="female" {% if user.gender == 'female' %}selected{% endif %}>Female</option>
+                    <option value="other" {% if user.gender == 'other' %}selected{% endif %}>Other</option>
+                    <option value="prefer-not-to-say" {% if user.gender == 'prefer-not-to-say' %}selected{% endif %}>Prefer not to say</option>
+                </select>
+            </div>
+            
+            <div class="security-section">
+                <h3>🔐 Security Question</h3>
+                <div class="form-group">
+                    <label for="security_question">Security Question</label>
+                    <select id="security_question" name="security_question" required>
+                        <option value="">Choose a security question</option>
+                        <option value="pet_name" {% if user.security_question == 'pet_name' %}selected{% endif %}>What was the name of your first pet?</option>
+                        <option value="birth_city" {% if user.security_question == 'birth_city' %}selected{% endif %}>In what city were you born?</option>
+                        <option value="mother_maiden" {% if user.security_question == 'mother_maiden' %}selected{% endif %}>What is your mother's maiden name?</option>
+                        <option value="first_school" {% if user.security_question == 'first_school' %}selected{% endif %}>What was the name of your first school?</option>
+                        <option value="favorite_teacher" {% if user.security_question == 'favorite_teacher' %}selected{% endif %}>Who was your favorite teacher?</option>
+                        <option value="childhood_friend" {% if user.security_question == 'childhood_friend' %}selected{% endif %}>What was the name of your childhood best friend?</option>
+                        <option value="first_car" {% if user.security_question == 'first_car' %}selected{% endif %}>What was the make of your first car?</option>
+                        <option value="favorite_book" {% if user.security_question == 'favorite_book' %}selected{% endif %}>What is your favorite book?</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="security_answer">Security Answer</label>
+                    <input type="text" id="security_answer" name="security_answer" placeholder="Enter your answer (leave blank to keep current)" autocomplete="off">
+                    <small style="color: #7F8C8D; font-size: 1rem; display: block; margin-top: 5px;">
+                        💡 Leave blank to keep your current security answer
+                    </small>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button type="submit" class="action-btn save-btn">💾 Save Changes</button>
+            <a href="{{ url_for('profile') }}" class="action-btn cancel-btn">❌ Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function calculateAge() {
+        const dobInput = document.getElementById('dob');
+        const ageInput = document.getElementById('age');
+        
+        if (dobInput.value) {
+            const dob = new Date(dobInput.value);
+            const today = new Date();
+            let age = today.getFullYear() - dob.getFullYear();
+            const monthDiff = today.getMonth() - dob.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dob.getDate())) {
+                age--;
+            }
+            
+            ageInput.value = age >= 0 ? age : '';
+        } else {
+            ageInput.value = '';
+        }
+    }
+    
+    // Initialize age calculation on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        const dobInput = document.getElementById('dob');
+        dobInput.addEventListener('change', calculateAge);
+        
+        // Set max date to today (prevent future dates)
+        const today = new Date();
+        const maxDate = today.toISOString().split('T')[0];
+        dobInput.max = maxDate;
+    });
+</script>
+{% endblock %}

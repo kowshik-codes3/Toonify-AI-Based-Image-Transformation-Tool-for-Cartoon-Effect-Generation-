@@ -1,0 +1,363 @@
+{% extends "base.html" %}
+
+{% block title %}Secure Checkout - Toonify{% endblock %}
+
+{% block extra_css %}
+<style>
+    .checkout-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 60px 40px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border: 4px solid #FFE066;
+        max-width: 600px;
+        width: 90%;
+        margin: 50px auto;
+        text-align: center;
+        animation: bounceIn 0.8s ease-out;
+        backdrop-filter: blur(10px);
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0.3);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .checkout-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+    }
+
+    .checkout-title {
+        font-size: 2.2rem;
+        color: #FF6B6B;
+        margin-bottom: 15px;
+        font-weight: bold;
+        text-shadow: 2px 2px 0px #FFE066;
+        font-family: 'Comic Sans MS', cursive;
+    }
+
+    .checkout-subtitle {
+        font-size: 1.1rem;
+        color: #4ECDC4;
+        margin-bottom: 30px;
+        font-weight: 500;
+    }
+
+    .payment-details {
+        background: linear-gradient(145deg, #f9f9f9, #ffffff);
+        border-radius: 20px;
+        padding: 30px;
+        margin: 30px 0;
+        border: 3px solid #4ECDC4;
+        box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .amount-display {
+        font-size: 2.5rem;
+        color: #FF6B6B;
+        font-weight: bold;
+        margin: 15px 0;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .file-info {
+        background: rgba(78, 205, 196, 0.1);
+        border-radius: 15px;
+        padding: 15px;
+        margin: 20px 0;
+        border: 2px dashed #4ECDC4;
+    }
+
+    .file-name {
+        font-size: 1rem;
+        color: #666;
+        word-break: break-all;
+        font-family: monospace;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 8px 12px;
+        border-radius: 10px;
+        display: inline-block;
+        margin-top: 5px;
+    }
+
+    .pay-button {
+        background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 20px 40px;
+        font-size: 1.3rem;
+        font-weight: bold;
+        font-family: 'Comic Sans MS', cursive;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 20px rgba(255, 107, 107, 0.3);
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .pay-button:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 12px 30px rgba(255, 107, 107, 0.4);
+        background: linear-gradient(45deg, #FF8E8E, #FF6B6B);
+    }
+
+    .pay-button:active {
+        transform: translateY(-1px) scale(1.02);
+    }
+
+    .pay-button::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 0;
+        height: 0;
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        transition: width 0.6s, height 0.6s;
+    }
+
+    .pay-button:active::before {
+        width: 300px;
+        height: 300px;
+    }
+
+    .security-info {
+        margin-top: 30px;
+        padding: 20px;
+        background: rgba(78, 205, 196, 0.1);
+        border-radius: 15px;
+        border: 2px solid #4ECDC4;
+    }
+
+    .security-title {
+        font-size: 1.1rem;
+        color: #4ECDC4;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+
+    .security-features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .security-feature {
+        display: flex;
+        align-items: center;
+        font-size: 0.9rem;
+        color: #666;
+    }
+
+    .security-feature .icon {
+        font-size: 1.2rem;
+        margin-right: 8px;
+        color: #4ECDC4;
+    }
+
+    .powered-by {
+        margin-top: 30px;
+        padding: 15px;
+        font-size: 0.9rem;
+        color: #888;
+        border-top: 2px dashed #FFE066;
+    }
+
+    .razorpay-logo {
+        color: #3395ff;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+
+    .loading {
+        display: none;
+        color: #4ECDC4;
+        margin-top: 20px;
+    }
+
+    .spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #4ECDC4;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 10px;
+    }
+
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="checkout-container">
+    <div class="checkout-icon">💳</div>
+    
+    <h1 class="checkout-title">Secure Checkout</h1>
+    <p class="checkout-subtitle">Complete your payment to download your cartoonized image</p>
+    
+    <div class="payment-details">
+        <div class="amount-display">₹{{ amount_inr }}</div>
+        
+        <div class="file-info">
+            <strong>📁 Your Cartoonized Image:</strong>
+            <div class="file-name">{{ filename }}</div>
+        </div>
+    </div>
+    
+    <button id="rzp-button" class="pay-button">
+        🔒 Pay ₹{{ amount_inr }} Securely
+    </button>
+    
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        Processing your payment...
+    </div>
+    
+    <div class="security-info">
+        <div class="security-title">🛡️ Your Payment is Protected</div>
+        <div class="security-features">
+            <div class="security-feature">
+                <span class="icon">🔒</span>
+                <span>SSL Encrypted</span>
+            </div>
+            <div class="security-feature">
+                <span class="icon">🏦</span>
+                <span>Bank Grade Security</span>
+            </div>
+            <div class="security-feature">
+                <span class="icon">✅</span>
+                <span>PCI DSS Compliant</span>
+            </div>
+            <div class="security-feature">
+                <span class="icon">💯</span>
+                <span>100% Safe</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="powered-by">
+        Powered by <span class="razorpay-logo">Razorpay</span> • Trusted by millions
+    </div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+      var options = {
+        "key": "{{ key_id }}",
+        "amount": "{{ amount_paise }}",
+        "currency": "INR",
+        "name": "Toonify - Cartoon Magic",
+        "description": "Download your amazing cartoonized image",
+        "order_id": "{{ order_id }}",
+        "handler": function (response){
+          // Show loading state
+          document.getElementById('rzp-button').style.display = 'none';
+          document.getElementById('loading').style.display = 'block';
+          
+          // POST response to server to verify signature
+          var form = document.createElement('form');
+          form.method = 'POST';
+          form.action = "{{ url_for('payments.verify') }}";
+          var fields = {
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature,
+            filename: "{{ filename }}",
+            image_id: "{{ image_id }}"
+          };
+          for (var k in fields){
+            var i = document.createElement('input');
+            i.type = 'hidden'; i.name = k; i.value = fields[k];
+            form.appendChild(i);
+          }
+          document.body.appendChild(form);
+          form.submit();
+        },
+        "modal": {
+          "ondismiss": function() {
+            // Reset button state if payment is cancelled
+            document.getElementById('rzp-button').style.display = 'inline-block';
+            document.getElementById('loading').style.display = 'none';
+          }
+        },
+        "prefill": {
+          "name": "{{ user_profile.username if user_profile else session.get('user_email') }}", 
+          "email": "{{ session.get('user_email') }}"
+        },
+        "theme": {
+          "color": "#FF6B6B",
+          "backdrop_color": "rgba(0, 0, 0, 0.7)"
+        },
+        "notes": {
+          "purpose": "Cartoonized image download",
+          "user": "{{ session.get('user_email') }}",
+          "filename": "{{ filename }}"
+        }
+      };
+
+      var rzp1 = new Razorpay(options);
+      
+      // Enhanced error handling
+      rzp1.on('payment.failed', function (response) {
+        alert('Payment failed: ' + response.error.description);
+        document.getElementById('rzp-button').style.display = 'inline-block';
+        document.getElementById('loading').style.display = 'none';
+      });
+      
+      document.getElementById('rzp-button').onclick = function(e){
+        e.preventDefault();
+        
+        // Add click animation
+        this.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+          this.style.transform = '';
+        }, 150);
+        
+        // Open Razorpay checkout
+        rzp1.open();
+      };
+
+      // Add keyboard support (Enter key)
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && document.getElementById('rzp-button').style.display !== 'none') {
+          document.getElementById('rzp-button').click();
+        }
+      });
+
+      // Auto-focus the button for better accessibility
+      window.addEventListener('load', function() {
+        document.getElementById('rzp-button').focus();
+      });
+    </script>
+{% endblock %}

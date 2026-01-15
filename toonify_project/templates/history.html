@@ -1,0 +1,345 @@
+{% extends "base.html" %}
+
+{% block title %}Toonify - History{% endblock %}
+
+{% block extra_css %}
+<style>
+    .history-container {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 25px;
+        padding: 40px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        border: 4px solid #FFE066;
+        max-width: 1200px;
+        width: 95%;
+        margin: 20px auto;
+        animation: bounceIn 0.8s ease-out;
+        backdrop-filter: blur(10px);
+    }
+
+    @keyframes bounceIn {
+        0% {
+            transform: scale(0.3);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.05);
+        }
+        70% {
+            transform: scale(0.9);
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .history-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .history-title {
+        font-size: 2.5rem;
+        color: #FF6B6B;
+        margin-bottom: 10px;
+        text-shadow: 2px 2px 0px #FFE066;
+        font-weight: bold;
+        animation: wiggle 2s ease-in-out infinite;
+    }
+
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(0deg); }
+        25% { transform: rotate(1deg); }
+        75% { transform: rotate(-1deg); }
+    }
+
+    .history-subtitle {
+        font-size: 1.2rem;
+        color: #4ECDC4;
+        margin-bottom: 20px;
+        font-weight: 500;
+    }
+
+    .image-gallery {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .gallery-item {
+        background: linear-gradient(145deg, #f0f0f0, #ffffff);
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        border: 3px solid transparent;
+        animation: fadeInUp 0.6s ease-out;
+    }
+
+    .gallery-item:hover {
+        transform: translateY(-8px) scale(1.02);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        border-color: #FF6B6B;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .image-container {
+        position: relative;
+        overflow: hidden;
+    }
+
+    .gallery-image {
+        width: 100%;
+        height: 250px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover .gallery-image {
+        transform: scale(1.1);
+    }
+
+    .image-overlay {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
+        color: white;
+        padding: 20px;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+    }
+
+    .gallery-item:hover .image-overlay {
+        transform: translateY(0);
+    }
+
+    .image-info h4 {
+        font-size: 1.2rem;
+        margin: 0 0 5px 0;
+        color: #FFE066;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .image-info p {
+        margin: 2px 0;
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+
+    .image-meta {
+        font-size: 0.8rem;
+        opacity: 0.7;
+    }
+
+    .image-date {
+        font-size: 0.8rem;
+        color: #4ECDC4;
+        font-weight: bold;
+    }
+
+    .image-actions {
+        margin-top: 10px;
+        display: flex;
+        gap: 10px;
+    }
+
+    .action-btn-small {
+        background: linear-gradient(45deg, #4ECDC4, #95E1D3);
+        color: white;
+        border: none;
+        border-radius: 15px;
+        padding: 8px 15px;
+        font-size: 0.8rem;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        cursor: pointer;
+    }
+
+    .action-btn-small:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(78, 205, 196, 0.4);
+        background: linear-gradient(45deg, #95E1D3, #4ECDC4);
+    }
+
+    .delete-btn {
+        background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+    }
+
+    .delete-btn:hover {
+        background: linear-gradient(45deg, #FF8E8E, #FF6B6B);
+        box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+    }
+
+    .no-images {
+        text-align: center;
+        padding: 60px 20px;
+        background: linear-gradient(145deg, #f9f9f9, #ffffff);
+        border-radius: 20px;
+        border: 3px dashed #FFE066;
+        margin-top: 30px;
+    }
+
+    .no-images h3 {
+        font-size: 2rem;
+        color: #FF6B6B;
+        margin-bottom: 15px;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .no-images p {
+        font-size: 1.1rem;
+        color: #666;
+        margin-bottom: 20px;
+    }
+
+    .create-first-btn {
+        background: linear-gradient(45deg, #FF6B6B, #FF8E8E);
+        color: white;
+        border: none;
+        border-radius: 25px;
+        padding: 15px 30px;
+        font-size: 1.1rem;
+        text-decoration: none;
+        font-weight: bold;
+        font-family: 'Comic Sans MS', cursive;
+        transition: all 0.3s ease;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        display: inline-block;
+        margin-top: 10px;
+    }
+
+    .create-first-btn:hover {
+        transform: translateY(-3px) scale(1.05);
+        box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
+        background: linear-gradient(45deg, #FF8E8E, #FF6B6B);
+    }
+
+    .stats-summary {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+        padding: 20px;
+        background: linear-gradient(145deg, #f9f9f9, #ffffff);
+        border-radius: 15px;
+        border: 2px solid #FFE066;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 10px;
+    }
+
+    .stat-number {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #FF6B6B;
+        display: block;
+    }
+
+    .stat-label {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 5px;
+    }
+
+    .payment-status {
+        display: block;
+        font-size: 0.8rem;
+        margin-top: 5px;
+        padding: 2px 6px;
+        border-radius: 8px;
+        font-weight: bold;
+    }
+
+    .payment-status.paid {
+        background: linear-gradient(45deg, #4ECDC4, #95E1D3);
+        color: white;
+    }
+
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="history-container">
+    <div class="history-header">
+        <h1 class="history-title">🖼️ Your Toonify History</h1>
+        <p class="history-subtitle">Your purchased cartoon transformations - ready to download!</p>
+        
+        {% if image_gallery %}
+        <div class="stats-summary">
+            <div class="stat-item">
+                <span class="stat-number">{{ image_gallery|length }}</span>
+                <div class="stat-label">Total Images</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ unique_styles|length if unique_styles else 0 }}</span>
+                <div class="stat-label">Styles Used</div>
+            </div>
+            <div class="stat-item">
+                <span class="stat-number">{{ total_size_mb }}MB</span>
+                <div class="stat-label">Total Size</div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if image_gallery %}
+    <div class="image-gallery">
+        {% for image in image_gallery %}
+        <div class="gallery-item">
+            <div class="image-container">
+                <img src="data:image/jpeg;base64,{{ image.cartoon_base64 }}" 
+                     alt="{{ image.style_name }} - {{ image.original_filename }}"
+                     class="gallery-image">
+                <div class="image-overlay">
+                    <div class="image-info">
+                        <h4>{{ image.style_name }}</h4>
+                        <p>{{ image.original_filename }}</p>
+                        <p class="image-meta">{{ image.image_width }}x{{ image.image_height }} • {{ image.file_size_mb }}MB</p>
+                        <p class="image-date">{{ image.created_at.strftime('%B %d, %Y') }}</p>
+                    </div>
+                    <div class="image-actions">
+                        <!-- Download button for paid images only -->
+                        <a href="{{ url_for('download_image', image_id=image.id) }}" class="action-btn-small download-btn">
+                            📥 Download Image
+                        </a>
+                        <span class="payment-status paid">✅ Purchased</span>
+                        <form method="POST" action="/delete_image/{{ image.id }}" style="display: inline;" 
+                              onsubmit="return confirm('Are you sure you want to delete this image?')">
+                            <button type="submit" class="action-btn-small delete-btn">
+                                🗑️ Delete
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="no-images">
+        <h3>🎨 No Cartoons Created Yet!</h3>
+        <p>You haven't created any cartoon transformations yet. Start your creative journey now!</p>
+        <a href="/toonify" class="create-first-btn">🚀 Create Your First Cartoon</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
