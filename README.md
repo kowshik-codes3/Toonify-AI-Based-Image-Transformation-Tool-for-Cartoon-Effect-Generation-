@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 # Toonify
 =======
 # 🎨 Toonify - Image Cartoonization App
@@ -70,4 +70,3 @@ toonify_project/
 ---
 
 *Clean, efficient, and user-friendly cartoon generation! 🎉*
->>>>>>> 00f04eb2f (Initial clean commit - Complete Toonify application)
