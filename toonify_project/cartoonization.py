@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 from PIL import Image, ImageFilter, ImageEnhance, ImageOps
 import os
-from tkinter.filedialog import *
 
 def vintage_style(image_path):
     """
