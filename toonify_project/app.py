@@ -19,8 +19,8 @@ def get_available_styles():
     return get_cartoonization_styles()
 
 app = Flask(__name__)
-app.secret_key = 'your-secret-key-here-change-this-in-production'  
-CORS(app) 
+app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here-change-this-in-production')
+CORS(app)
 
 UPLOAD_FOLDER = 'uploads'
 if not os.path.exists(UPLOAD_FOLDER):
